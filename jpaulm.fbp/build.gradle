@@ -60,19 +60,14 @@ if (JavaVersion.current().isJava8Compatible()) {
     }
 }
 
-
 ext {
     snapshotPublicationRepository = "https://oss.sonatype.org/content/repositories/snapshots/"
     releasePublicationRepository = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 
-
     mainClassName = 'com.jpaulmorrison.graphics.DrawFBP'
     ossrhUser =  project.hasProperty('ossrhUser') ? project.property('ossrhUser') : ""
     osshrPassword = project.hasProperty('osshrPassword') ? project.property('osshrPassword') : ""
-
 }
-
-
 
 publishing {
 
@@ -131,11 +126,8 @@ publishing {
 
     repositories {
 
-
         maven {
-
             url(version.endsWith('SNAPSHOT') ? snapshotPublicationRepository : releasePublicationRepository)
-
             credentials {
                 username = "ossrhUser"
                 password = "ossrhPassword"
