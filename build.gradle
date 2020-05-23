@@ -19,11 +19,10 @@ buildscript {
 plugins {
     id "io.codearte.nexus-staging" version "0.21.2"
     id "eclipse"
-    id "java-library"
+    //id "java-library"
 }
 
 version = '2.20.6'
-
 group = 'com.jpaulmorrison'
 
 allprojects {
@@ -31,44 +30,9 @@ allprojects {
         mavenCentral()
     }
 }
-              
 
 description = 'DrawFBP is a picture-drawing tool that allows users to create multi-level diagrams implementing the technology and methodology known as Flow-Based Programming (FBP). Diagrams are saved in DrawFBP XML format, and will generate JavaFBP or C#FBP networks.'
 
-compileJava.options.encoding = 'UTF-8'
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
-nexusStaging {  
-    username = "ossrhUser"
-    password = "ossrhPassword"
-    
-}
 
 
-
-java {
- withSourcesJar()
- withJavadocJar()
-}
-
-
-
-// Used to generate initial maven-dir layout
-task "create-dirs" { 
-    doLast {
-    description = "Create default maven directory structure"
-    //}
-    // {
-       sourceSets*.java.srcDirs*.each { it.mkdirs() }
-        sourceSets*.resources.srcDirs*.each { it.mkdirs() }
-    }
-}
-
-javadoc {
-    if(JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
-    }
-}
 

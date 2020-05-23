@@ -14,6 +14,10 @@ dependencies {
     implementation ('javax.help:javahelp:2.0.05')
 }
 
+compileJava.options.encoding = 'UTF-8'
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
 jar {
     archiveVersion = '2.20.6'
     manifest {
@@ -44,6 +48,12 @@ jar {
 }
 
 
+javadoc {
+    if(JavaVersion.current().isJava9Compatible()) {
+        options.addBooleanOption('html5', true)
+    }
+}
+
 if (JavaVersion.current().isJava8Compatible()) {
     tasks.withType(Javadoc) {
         options.addBooleanOption('Xdoclint:none', true)
@@ -61,6 +71,7 @@ ext {
     osshrPassword = project.hasProperty('osshrPassword') ? project.property('osshrPassword') : ""
 
 }
+
 
 
 publishing {
@@ -135,12 +146,35 @@ publishing {
     }
 }
 
-    signing {
-        required {
-            // signing is required if this is a release version and the artifacts are to be published
-            !version.toString().endsWith('-SNAPSHOT') && tasks.withType(PublishToMavenRepository).find {
-                gradle.taskGraph.hasTask it
-            }
+signing {
+    required {
+        // signing is required if this is a release version and the artifacts are to be published
+        !version.toString().endsWith('-SNAPSHOT') && tasks.withType(PublishToMavenRepository).find {
+            gradle.taskGraph.hasTask it
         }
-        sign publishing.publications
     }
+    sign publishing.publications
+}
+
+
+nexusStaging {
+    username = "ossrhUser"
+    password = "ossrhPassword"
+
+}
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+// Used to generate initial maven-dir layout
+task "create-dirs" {
+    doLast {
+        description = "Create default maven directory structure"
+        //}
+        // {
+        sourceSets*.java.srcDirs*.each { it.mkdirs() }
+        sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+    }
+}
