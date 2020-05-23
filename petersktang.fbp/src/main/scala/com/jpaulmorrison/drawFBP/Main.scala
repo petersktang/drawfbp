@@ -22,17 +22,17 @@ class DrawFBPApp extends Application {
 
   @throws[Exception]
   def start(primaryStage: Stage): Unit = {
-    //startDrawFBP(primaryStage)
-    startHelloWorld(primaryStage)
+    startDrawFBP(primaryStage)
+    //startHelloWorld(primaryStage)
   }
 
   def startDrawFBP(primaryStage: Stage): Unit = {
-    //val controller = new MainViewController(primaryStage)
-    //val fxml = new FXMLLoader(getClass().getResource("/drawFBP/MainView.fxml"))
-    //fxml.setController(controller)
-    //primaryStage.setScene(new Scene(fxml.load))
-    //primaryStage.setOnCloseRequest( _ => Platform.exit ) // seems better than System.exit(0)
-    //primaryStage.show()
+    val controller = new MainViewController(primaryStage)
+    val fxml = new FXMLLoader(getClass().getResource("/drawFBP/MainView.fxml"))
+    fxml.setController(controller)
+    primaryStage.setScene(new Scene(fxml.load))
+    primaryStage.setOnCloseRequest( _ => Platform.exit ) // seems better than System.exit(0)
+    primaryStage.show()
   }
 
   def startHelloWorld(primaryStage: Stage): Unit = {
