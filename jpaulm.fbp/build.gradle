@@ -1,0 +1,146 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'maven-publish'
+    id 'signing'
+
+}
+application {
+    mainClassName = 'com.jpaulmorrison.graphics.DrawFBP'
+}
+
+dependencies {
+    implementation ('math.geom2d:javaGeom:0.11.1')
+    implementation ('javax.help:javahelp:2.0.05')
+}
+
+jar {
+    archiveVersion = '2.20.6'
+    manifest {
+        attributes 'Implementation-Title': 'DrawFBP', 'Implementation-Version': archiveVersion,
+                "Class-Path": configurations.compileClasspath.collect { it.getName() }.join(' '),
+                'Main-Class' : mainClassName
+    }
+
+
+    //baseName = project.name + '-all'
+    archiveBaseName = project.name
+    from sourceSets.main.output
+
+    dependsOn configurations.compileClasspath
+
+    from {
+        configurations.compileClasspath.findAll {  it.name.endsWith('jar')  }.collect {   zipTree(it)  }
+
+    }
+
+    exclude('math/geom2s/**')
+    exclude('math/geom3d/**')
+    exclude('math/geom2s/**')
+    exclude('math/utils/**')
+    exclude('math/package/html')
+    exclude('com/seisw/util/geom/**')
+
+}
+
+
+if (JavaVersion.current().isJava8Compatible()) {
+    tasks.withType(Javadoc) {
+        options.addBooleanOption('Xdoclint:none', true)
+    }
+}
+
+
+ext {
+    snapshotPublicationRepository = "https://oss.sonatype.org/content/repositories/snapshots/"
+    releasePublicationRepository = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+
+
+    mainClassName = 'com.jpaulmorrison.graphics.DrawFBP'
+    ossrhUser =  project.hasProperty('ossrhUser') ? project.property('ossrhUser') : ""
+    osshrPassword = project.hasProperty('osshrPassword') ? project.property('osshrPassword') : ""
+
+}
+
+
+publishing {
+
+    publications {
+        mavenJava(MavenPublication) {
+
+            groupId = 'com.jpaulmorrison'
+            artifactId = 'drawfbp'
+
+            version = '2.20.6'
+            from components.java
+
+
+            pom {
+                name = 'DrawFBP'
+                description = 'Diagramming Tool for Flow-Based Programming'
+                // groupId 'com.jpaulmorrison'
+                packaging 'jar'
+
+                url = 'https://github.com/jpaulm/drawfbp'
+
+
+                licenses {
+                    license {
+                        name = 'Clarified Artistic License'
+                        url = 'https://spdx.org/licenses/ClArtistic.html'
+                    }
+
+                }
+
+                developers {
+                    developer {
+                        id = 'jpaulmorr'
+                        name = 'John Paul Rodker Morrison (Software architect/developer)'
+                        email = 'jpaulmorr@gmail.com'
+                    }
+                    developer {
+                        id = 'bobcorrick'
+                        name = 'Bob Corrick (Software architect/developer)'
+                        email = 'bobcorrick@outlook.com'
+                    }
+                }
+
+
+                scm {
+                    connection = 'scm:git:git:https://github.com/jpaulm.git'
+                    developerConnection = 'scm:git:ssh:https://github.com/jpaulm.git'
+                    url = 'https://github.com/jpaulm.git'
+                }
+
+
+            }
+        }
+    }
+
+
+    repositories {
+
+
+        maven {
+
+            url(version.endsWith('SNAPSHOT') ? snapshotPublicationRepository : releasePublicationRepository)
+
+            credentials {
+                username = "ossrhUser"
+                password = "ossrhPassword"
+            }
+
+
+        }
+    }
+}
+
+    signing {
+        required {
+            // signing is required if this is a release version and the artifacts are to be published
+            !version.toString().endsWith('-SNAPSHOT') && tasks.withType(PublishToMavenRepository).find {
+                gradle.taskGraph.hasTask it
+            }
+        }
+        sign publishing.publications
+    }
